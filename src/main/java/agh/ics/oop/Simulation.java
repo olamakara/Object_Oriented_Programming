@@ -1,15 +1,23 @@
 package agh.ics.oop;
 
 import agh.ics.oop.elements.Animal;
+import agh.ics.oop.gui.App;
+import agh.ics.oop.gui.IAppObserver;
 import agh.ics.oop.map.GrassGenerator;
 import agh.ics.oop.map.WorldMap;
 import agh.ics.oop.utils.Vector2d;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static agh.ics.oop.elements.Constants.*;
 
-public class Simulation {
+public class Simulation implements Runnable {
     public WorldMap map;
     private GrassGenerator grassGenerator;
+    private int moveDelay;
+    private List<IAppObserver> observers = new ArrayList<>();
+
 
     private void simulateDay() {
         //usunięcie martwych zwierząt z mapy,
@@ -25,14 +33,24 @@ public class Simulation {
         System.out.print(map.generuj());
     }
 
-    public Simulation() {
+    public void run() {
         map = new WorldMap();
         grassGenerator = new GrassGenerator(map);
         generateAnimals();
 
         System.out.print(map.generuj());
 
-        for(int i = 0; i < 5; i++) simulateDay();
+        for(int i = 0; i < 5; i++) {
+            simulateDay();
+            for (IAppObserver observer: observers) {
+                observer.positionChanged(i);
+            }
+            try {
+                Thread.sleep(moveDelay);
+            } catch (InterruptedException exception) {
+                System.out.println("Simulations stopped: " + exception);
+            }
+        }
     }
 
     public void generateAnimals() {
@@ -40,6 +58,14 @@ public class Simulation {
             generateAnimalRandomly();
         }
     }
+
+    public void setDelay(int delay) {
+        moveDelay = delay;
+    }
+    public void addObserver(IAppObserver observer) {
+        observers.add(observer);
+    }
+
 
     public void generateAnimalRandomly() {
         Animal animal = new Animal(map, Vector2d.random(new Vector2d(MAP_WIDTH, MAP_HEIGHT)));

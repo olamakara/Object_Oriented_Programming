@@ -31,4 +31,6 @@ public class Constants {
     //wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
     //WLASNE: ilość energii zmniejszającej się każdego dnia
     public static final int DAILY_ENERGY_DECREASE = 1;
+    //WLASNE: opoznienie jednego dnia symulacji
+    public static final int DAY_DELAY = 1000;
 }
