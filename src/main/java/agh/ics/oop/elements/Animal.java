@@ -6,21 +6,25 @@ import agh.ics.oop.utils.Vector2d;
 
 import java.util.Random;
 
+import static agh.ics.oop.elements.Constants.*;
+
 public class Animal {
     private Vector2d location;
     private int energy;
     private Direction direction;
     public Genome genome;
     private WorldMap map;
+    private int currentAge = 0;
+    private int childrenCount = 0;
 
-    public Animal(WorldMap map, Vector2d initialPosition, int startEnergy, int genomeLength) {
+    public Animal(WorldMap map, Vector2d initialPosition) {
         this.location = initialPosition;
-        this.energy = startEnergy;
+        this.energy = START_ANIMAL_ENERGY;
         this.map = map;
 
         Random rand = new Random();
         this.direction = new Direction(rand.nextInt(8));
-        this.genome = new Genome(genomeLength);
+        this.genome = new Genome(GENOME_LENGTH);
     }
 
     public Vector2d getLocation() {
@@ -36,13 +40,26 @@ public class Animal {
     }
 
     public void move() {
-        Vector2d oldLocation = this.location;
         this.getDirection().rotate(this.getGenome().getCurrentGene());
         Vector2d newLocation = this.direction.calculateMove(this.location);
-        //Tymczasowe, potem w zależności od wyboru opcji
-        if(newLocation.x() >= 0 && newLocation.x() < this.map.width && newLocation.y() >= 0 && newLocation.y() < this.map.height) {
-            this.location = newLocation;
-        }
-        this.map.moveAnimal(this, oldLocation, this.location);
+        this.location = this.map.moveAnimal(this, this.location, newLocation);
+    }
+
+    public void changeEnergy(int changeBy) {
+        this.energy += changeBy;
+    }
+    public int getEnergy() {
+        return this.energy;
+    }
+    public int getAge() {
+        return this.currentAge;
+    }
+    public int getChildrenCount() {
+        return this.childrenCount;
+    }
+
+    public void ageAnimal() {
+        this.currentAge += 1;
+        this.energy -= DAILY_ENERGY_DECREASE;
     }
 }
