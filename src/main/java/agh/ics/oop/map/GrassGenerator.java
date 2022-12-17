@@ -6,7 +6,7 @@ import java.util.*;
 
 import static agh.ics.oop.elements.Constants.*;
 
-public class GrassGenerator {
+public class GrassGenerator implements IGrassGenObserver {
     private WorldMap map;
     private final Map<Vector2d, MapField> mapFields;
     private final List<Vector2d> emptyFields = new ArrayList<Vector2d>();
@@ -14,6 +14,9 @@ public class GrassGenerator {
     public GrassGenerator(WorldMap map) {
         this.map = map;
         this.mapFields = map.getFields();
+        for(MapField field : this.mapFields.values()) {
+            field.addGrassGenObserver(this);
+        }
 
         for(int x = 0; x < MAP_WIDTH; x++) {
             for(int y = 0; y < MAP_HEIGHT; y++) {
@@ -22,6 +25,10 @@ public class GrassGenerator {
         }
 
         generate(START_GRASS_COUNT);
+    }
+
+    public void freeGrass(Vector2d position) {
+        emptyFields.add(position);
     }
 
     public void generate(int grassCount) {

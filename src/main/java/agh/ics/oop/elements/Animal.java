@@ -45,7 +45,7 @@ public class Animal {
         this.location = this.map.moveAnimal(this, this.location, newLocation);
     }
 
-    public void changeEnergy(int changeBy) {
+    public void addEnergy(int changeBy) {
         this.energy += changeBy;
     }
     public int getEnergy() {

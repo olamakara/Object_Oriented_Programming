@@ -1,8 +1,10 @@
 package agh.ics.oop.map;
 
+import agh.ics.oop.configurations.border.IBorderOption;
 import agh.ics.oop.elements.Animal;
 import agh.ics.oop.options.MapVariant;
 import agh.ics.oop.utils.Vector2d;
+import javafx.scene.layout.GridPane;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +18,12 @@ public class WorldMap {
     private final List<Animal> animals = new ArrayList<>();
     private final Vector2d lowerLeftBoundary;
     private final Vector2d upperRightBoundary;
-    public WorldMap() {
+    private final IBorderOption borderOption;
+    private final GridPane grid;
+
+    public WorldMap(IBorderOption borderOption, GridPane grid) {
+        this.grid = grid;
+        this.borderOption = borderOption;
         this.lowerLeftBoundary = new Vector2d(0, 0);
         this.upperRightBoundary = new Vector2d(MAP_WIDTH-1, MAP_HEIGHT-1);
         this.generateFields();
@@ -24,7 +31,7 @@ public class WorldMap {
 
     private void addField(int x, int y) {
         Vector2d positionVector = new Vector2d(x, y);
-        this.mapFields.put(positionVector, new MapField(positionVector));
+        this.mapFields.put(positionVector, new MapField(positionVector, grid));
     }
 
     private void generateFields() {
@@ -42,29 +49,11 @@ public class WorldMap {
 
     public Vector2d moveAnimal(Animal animal, Vector2d oldLocation, Vector2d newLocation) {
         if(!((newLocation.follows(lowerLeftBoundary)) && (newLocation.precedes(upperRightBoundary)))) {
-            switch(MAP_VARIANT) {
-                case KULA_ZIEMSKA:
-                    newLocation = calculateKulaZiemskaMove(newLocation);
-                    break;
-                case PIEKIELNY_PORTAL:
-                    animal.changeEnergy(-BREEDING_ENERGY);
-                    newLocation = Vector2d.random(new Vector2d(MAP_WIDTH, MAP_HEIGHT));
-                    break;
-            }
+            newLocation = borderOption.calculateLocationAfterBorderHit(newLocation, animal);
         }
         mapFields.get(oldLocation).removeAnimal(animal);
         mapFields.get(newLocation).addAnimal(animal);
         return newLocation;
-    }
-
-    private Vector2d calculateKulaZiemskaMove(Vector2d newLocation) {
-        int x = newLocation.x();
-        int y = newLocation.y();
-        if(x < 0) x = MAP_WIDTH-1;
-        if(x >= MAP_WIDTH) x = 0;
-        if(y < 0) y = MAP_HEIGHT-1;
-        if(y >= MAP_HEIGHT) y = 0;
-        return new Vector2d(x, y);
     }
 
     public void moveAnimals() {
@@ -73,28 +62,23 @@ public class WorldMap {
         }
     }
 
+    public void makeAnimalsEatGrass() {
+        for(MapField mapField : mapFields.values()) {
+            mapField.eatGrass();
+        }
+    }
+
     public Map<Vector2d, MapField> getFields() {
         return mapFields;
     }
 
-    public void ageAnimals() {
+    public void dayGoneBy() {
+        for(MapField mapField : mapFields.values()) {
+            mapField.manageUI();
+        }
+
         for(Animal animal : animals) {
             animal.ageAnimal();
         }
-    }
-
-    //Tymczasowa funkcja
-    public String generuj() {
-        String wypisz = "";
-        for(int x = 0; x < MAP_WIDTH; x++) {
-            for(int y = 0; y < MAP_HEIGHT; y++) {
-                MapField mf = this.mapFields.get(new Vector2d(x, y));
-                if(!mf.generuj().equals("")) {
-                    wypisz += mf.generuj() + "\n";
-                }
-            }
-        }
-        wypisz += "\n";
-        return wypisz;
     }
 }
