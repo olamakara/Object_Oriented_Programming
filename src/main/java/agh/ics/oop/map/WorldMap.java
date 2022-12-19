@@ -1,6 +1,7 @@
 package agh.ics.oop.map;
 
 import agh.ics.oop.configurations.border.IBorderOption;
+import agh.ics.oop.configurations.genes.IGeneOption;
 import agh.ics.oop.elements.Animal;
 import agh.ics.oop.options.MapVariant;
 import agh.ics.oop.utils.Vector2d;
@@ -19,11 +20,13 @@ public class WorldMap {
     private final Vector2d lowerLeftBoundary;
     private final Vector2d upperRightBoundary;
     private final IBorderOption borderOption;
+    private final IGeneOption geneOption;
     private final GridPane grid;
 
-    public WorldMap(IBorderOption borderOption, GridPane grid) {
+    public WorldMap(IBorderOption borderOption, IGeneOption geneOption, GridPane grid) {
         this.grid = grid;
         this.borderOption = borderOption;
+        this.geneOption = geneOption;
         this.lowerLeftBoundary = new Vector2d(0, 0);
         this.upperRightBoundary = new Vector2d(MAP_WIDTH-1, MAP_HEIGHT-1);
         this.generateFields();
@@ -31,7 +34,7 @@ public class WorldMap {
 
     private void addField(int x, int y) {
         Vector2d positionVector = new Vector2d(x, y);
-        this.mapFields.put(positionVector, new MapField(positionVector, grid));
+        this.mapFields.put(positionVector, new MapField(positionVector, grid, this, geneOption));
     }
 
     private void generateFields() {
@@ -66,6 +69,22 @@ public class WorldMap {
         for(MapField mapField : mapFields.values()) {
             mapField.eatGrass();
         }
+    }
+
+    public void makeAnimalsReproduce() {
+        for(MapField mapField : mapFields.values()) {
+            mapField.reproduce();
+        }
+    }
+
+    public void removeDeadAnimals() {
+        for(Animal animal : animals) {
+            if(animal.getEnergy() <= 0) {
+                mapFields.get(animal.getLocation()).removeAnimal(animal);
+            }
+        }
+
+        animals.removeIf(next -> next.getEnergy() <= 0);
     }
 
     public Map<Vector2d, MapField> getFields() {

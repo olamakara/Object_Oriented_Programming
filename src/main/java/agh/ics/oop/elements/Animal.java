@@ -27,6 +27,16 @@ public class Animal {
         this.genome = new Genome(GENOME_LENGTH);
     }
 
+    public Animal(WorldMap map, Vector2d initialPosition, int startEnergy, Genome childGenome) {
+        this.location = initialPosition;
+        this.energy = startEnergy;
+        this.map = map;
+
+        Random rand = new Random();
+        this.direction = new Direction(rand.nextInt(8));
+        this.genome = childGenome;
+    }
+
     public Vector2d getLocation() {
         return location;
     }

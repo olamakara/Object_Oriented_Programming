@@ -1,6 +1,8 @@
 package agh.ics.oop.map;
 
+import agh.ics.oop.configurations.genes.IGeneOption;
 import agh.ics.oop.elements.Animal;
+import agh.ics.oop.elements.Genome;
 import agh.ics.oop.utils.Vector2d;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
@@ -22,6 +24,8 @@ public class MapField {
     private Rectangle grassRect;
     private Rectangle animalRect;
     private IGrassGenObserver grassGenObserver;
+    private WorldMap map;
+    private IGeneOption geneOption;
 
     private final TreeSet<Animal> animals = new TreeSet<Animal>(new Comparator<Animal>() {
         @Override
@@ -40,9 +44,11 @@ public class MapField {
     });
     private boolean isGrass = false;
 
-    public MapField(Vector2d position, GridPane grid) {
+    public MapField(Vector2d position, GridPane grid, WorldMap map, IGeneOption geneOption) {
         this.grid = grid;
         this.position = position;
+        this.map = map;
+        this.geneOption = geneOption;
         Platform.runLater(this::generateUIElements);
     }
 
@@ -79,6 +85,21 @@ public class MapField {
             animals.first().addEnergy(GRASS_EATEN_ENERGY);
             this.isGrass = false;
             this.grassGenObserver.freeGrass(this.position);
+        }
+    }
+
+    public void reproduce() {
+        if(animals.size() >= 2) {
+            Animal parent1 = animals.first();
+            Animal parent2 = (Animal) animals.toArray()[1];
+            if(parent2.getEnergy() >= BREEDING_ENERGY) {
+                parent1.addEnergy(-BREEDING_ENERGY);
+                parent2.addEnergy(-BREEDING_ENERGY);
+                Genome childGenome = new Genome(GENOME_LENGTH, geneOption, parent1.getGenome(), parent2.getGenome(), parent1.getEnergy(), parent2.getEnergy());
+                Animal child = new Animal(map, position, BREEDING_ENERGY*2, childGenome);
+                this.addAnimal(child);
+                this.map.addAnimal(child);
+            }
         }
     }
 

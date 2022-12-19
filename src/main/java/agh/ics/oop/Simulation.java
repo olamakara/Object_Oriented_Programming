@@ -3,6 +3,9 @@ package agh.ics.oop;
 import agh.ics.oop.configurations.border.IBorderOption;
 import agh.ics.oop.configurations.border.KulaZiemskaBorder;
 import agh.ics.oop.configurations.border.PiekielnyPortalBorder;
+import agh.ics.oop.configurations.genes.IGeneOption;
+import agh.ics.oop.configurations.genes.LekkaKorektaGene;
+import agh.ics.oop.configurations.genes.PelnaLosowoscGene;
 import agh.ics.oop.elements.Animal;
 import agh.ics.oop.gui.App;
 import agh.ics.oop.map.GrassGenerator;
@@ -29,11 +32,13 @@ public class Simulation implements Runnable {
 
     private void simulateDay() {
         //usunięcie martwych zwierząt z mapy,
+        map.removeDeadAnimals();
         //skręt i przemieszczenie każdego zwierzęcia,
         map.moveAnimals();
         //konsumpcja roślin na których pola weszły zwierzęta,
         map.makeAnimalsEatGrass();
         //rozmnażanie się najedzonych zwierząt znajdujących się na tym samym polu,
+        map.makeAnimalsReproduce();
         //wzrastanie nowych roślin na wybranych polach mapy.
         grassGenerator.generate(DAILY_GRASS_COUNT);
         //*Minął dzień więc wiek zwierząt się zwiększa, dodatkowo załatwiamy kwestie UI dla MapFieldów
@@ -41,7 +46,7 @@ public class Simulation implements Runnable {
     }
 
     public void run() {
-        map = new WorldMap(chooseBorderOption(), grid);
+        map = new WorldMap(chooseBorderOption(), chooseGeneOption(), grid);
         grassGenerator = new GrassGenerator(map);
         generateAnimals();
 
@@ -59,6 +64,13 @@ public class Simulation implements Runnable {
         return switch(MAP_VARIANT) {
             case KULA_ZIEMSKA -> new KulaZiemskaBorder();
             case PIEKIELNY_PORTAL -> new PiekielnyPortalBorder();
+        };
+    }
+
+    private IGeneOption chooseGeneOption() {
+        return switch(GENE_VARIANT) {
+            case PELNA_LOSOWOSC -> new PelnaLosowoscGene();
+            case LEKKA_KOREKTA -> new LekkaKorektaGene();
         };
     }
 
