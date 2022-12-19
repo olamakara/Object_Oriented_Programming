@@ -12,7 +12,7 @@ public record Vector2d(int x, int y) {
         if(this == other) return true;
         if(!(other instanceof Vector2d otherVector)) return false;
 
-        return otherVector.hashCode() == this.hashCode();
+        return otherVector.x() == this.x() && otherVector.y() == this.y();
     }
 
     public static Vector2d random(Vector2d limits) {

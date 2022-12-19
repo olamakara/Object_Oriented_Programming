@@ -53,13 +53,19 @@ public class Simulation implements Runnable {
         puszczaOption.updateMap(map);
         generateAnimals();
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         while(isActive) {
-            simulateDay();
             try {
                 Thread.sleep(moveDelay);
             } catch (InterruptedException exception) {
                 System.out.println("Simulations stopped: " + exception);
             }
+            simulateDay();
         }
     }
 

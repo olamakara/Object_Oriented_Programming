@@ -22,7 +22,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Config config = new Config();
+        Config config = new Config(primaryStage);
         primaryStage.setScene(config.getScreen());
         primaryStage.show();
 

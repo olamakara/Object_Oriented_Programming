@@ -60,7 +60,7 @@ public class MapField {
         grassRect = new Rectangle(UI_BOX_SIZE, UI_BOX_SIZE);
         grassRect.setFill(Color.color(0.13, 0.61, 0));
         grassRect.setStroke(Color.color(0.13, 0.61, 0));
-        grassRect.setVisible(this.isGrass);
+        grassRect.setOpacity(this.isGrass ? 1 : 0);
         grid.add(grassRect, position.x(), position.y());
         GridPane.setHalignment(grassRect, HPos.CENTER);
 
@@ -71,7 +71,7 @@ public class MapField {
         grid.add(animalRect, position.x(), position.y());
         GridPane.setHalignment(animalRect, HPos.CENTER);
 
-        manageUI();
+        Platform.runLater(this::manageUI);
     }
 
     public void addAnimal(Animal animal) {
@@ -112,7 +112,7 @@ public class MapField {
 
     public void manageUI() {
         if(animalRect == null || grassRect == null) return;
-        grassRect.setVisible(this.isGrass);
+        grassRect.setOpacity(this.isGrass ? 1 : (puszczaOption.checkIfPuszcza(position) ? 0.3 : 0));
 
         Color grassColor = (puszczaOption.checkIfPuszcza(position)) ? Color.color(0.04, 0.29, 0) : Color.color(0.13, 0.61, 0);
         grassRect.setFill(grassColor);

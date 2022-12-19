@@ -54,8 +54,9 @@ public class AppInstance {
 
     private void generateGrid() {
         grid = new GridPane();
-        grid.setGridLinesVisible(true);
         grid.setAlignment(Pos.CENTER);
+
+        grid.setGridLinesVisible(GRIDLINES_VISIBLE);
 
         for(int i = 0; i < MAP_WIDTH; i++) {
             grid.getColumnConstraints().add(new ColumnConstraints(UI_GRID_SIZE));
