@@ -1,9 +1,10 @@
 package agh.ics.oop.map;
 
 import agh.ics.oop.configurations.border.IBorderOption;
+import agh.ics.oop.configurations.behaviour.IBehaviourOption;
 import agh.ics.oop.configurations.genes.IGeneOption;
+import agh.ics.oop.configurations.puszcza.IPuszczaOption;
 import agh.ics.oop.elements.Animal;
-import agh.ics.oop.options.MapVariant;
 import agh.ics.oop.utils.Vector2d;
 import javafx.scene.layout.GridPane;
 
@@ -21,12 +22,16 @@ public class WorldMap {
     private final Vector2d upperRightBoundary;
     private final IBorderOption borderOption;
     private final IGeneOption geneOption;
+    private final IBehaviourOption behaviourOption;
+    private final IPuszczaOption puszczaOption;
     private final GridPane grid;
 
-    public WorldMap(IBorderOption borderOption, IGeneOption geneOption, GridPane grid) {
+    public WorldMap(IBorderOption borderOption, IGeneOption geneOption, IBehaviourOption behaviourOption, IPuszczaOption puszczaOption, GridPane grid) {
         this.grid = grid;
         this.borderOption = borderOption;
         this.geneOption = geneOption;
+        this.behaviourOption = behaviourOption;
+        this.puszczaOption = puszczaOption;
         this.lowerLeftBoundary = new Vector2d(0, 0);
         this.upperRightBoundary = new Vector2d(MAP_WIDTH-1, MAP_HEIGHT-1);
         this.generateFields();
@@ -34,7 +39,7 @@ public class WorldMap {
 
     private void addField(int x, int y) {
         Vector2d positionVector = new Vector2d(x, y);
-        this.mapFields.put(positionVector, new MapField(positionVector, grid, this, geneOption));
+        this.mapFields.put(positionVector, new MapField(positionVector, grid, this, geneOption, behaviourOption, puszczaOption));
     }
 
     private void generateFields() {
@@ -54,7 +59,7 @@ public class WorldMap {
         if(!((newLocation.follows(lowerLeftBoundary)) && (newLocation.precedes(upperRightBoundary)))) {
             newLocation = borderOption.calculateLocationAfterBorderHit(newLocation, animal);
         }
-        mapFields.get(oldLocation).removeAnimal(animal);
+        mapFields.get(oldLocation).removeAnimal(animal, false);
         mapFields.get(newLocation).addAnimal(animal);
         return newLocation;
     }
@@ -80,7 +85,7 @@ public class WorldMap {
     public void removeDeadAnimals() {
         for(Animal animal : animals) {
             if(animal.getEnergy() <= 0) {
-                mapFields.get(animal.getLocation()).removeAnimal(animal);
+                mapFields.get(animal.getLocation()).removeAnimal(animal, true);
             }
         }
 

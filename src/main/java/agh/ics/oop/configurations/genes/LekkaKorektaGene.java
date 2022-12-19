@@ -20,13 +20,9 @@ public class LekkaKorektaGene extends AbstractGeneOption {
 
     @Override
     public List<Integer> generateGene(List<Integer> genome) {
-        System.out.println("\n\n\n");
-        System.out.println(genome.toString());
-        Random rand = new Random();
         for(int index : this.getRandomIndexes(genome.size(), MINIMUM_MUTATIONS, MAXIMUM_MUTATIONS)) {
             genome.set(index, newGene(genome.get(index)));
         }
-        System.out.println(genome.toString());
         return genome;
     }
 }

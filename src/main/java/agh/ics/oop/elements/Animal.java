@@ -1,5 +1,6 @@
 package agh.ics.oop.elements;
 
+import agh.ics.oop.configurations.behaviour.IBehaviourOption;
 import agh.ics.oop.map.WorldMap;
 import agh.ics.oop.utils.Direction;
 import agh.ics.oop.utils.Vector2d;
@@ -17,17 +18,17 @@ public class Animal {
     private int currentAge = 0;
     private int childrenCount = 0;
 
-    public Animal(WorldMap map, Vector2d initialPosition) {
+    public Animal(WorldMap map, Vector2d initialPosition, IBehaviourOption behaviourOption) {
         this.location = initialPosition;
         this.energy = START_ANIMAL_ENERGY;
         this.map = map;
 
         Random rand = new Random();
         this.direction = new Direction(rand.nextInt(8));
-        this.genome = new Genome(GENOME_LENGTH);
+        this.genome = new Genome(GENOME_LENGTH, behaviourOption);
     }
 
-    public Animal(WorldMap map, Vector2d initialPosition, int startEnergy, Genome childGenome) {
+    public Animal(WorldMap map, Vector2d initialPosition, int startEnergy, Genome childGenome, IBehaviourOption behaviourOption) {
         this.location = initialPosition;
         this.energy = startEnergy;
         this.map = map;

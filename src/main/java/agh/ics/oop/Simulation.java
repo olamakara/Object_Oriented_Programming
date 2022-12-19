@@ -3,21 +3,22 @@ package agh.ics.oop;
 import agh.ics.oop.configurations.border.IBorderOption;
 import agh.ics.oop.configurations.border.KulaZiemskaBorder;
 import agh.ics.oop.configurations.border.PiekielnyPortalBorder;
+import agh.ics.oop.configurations.behaviour.IBehaviourOption;
+import agh.ics.oop.configurations.behaviour.NiecoSzalenstwaBehaviour;
+import agh.ics.oop.configurations.behaviour.PelnaProkrastynacjaBehaviour;
 import agh.ics.oop.configurations.genes.IGeneOption;
 import agh.ics.oop.configurations.genes.LekkaKorektaGene;
 import agh.ics.oop.configurations.genes.PelnaLosowoscGene;
+import agh.ics.oop.configurations.puszcza.IPuszczaOption;
+import agh.ics.oop.configurations.puszcza.ToksyczeTrupyPuszcza;
+import agh.ics.oop.configurations.puszcza.ZalesioneRownikiPuszcza;
 import agh.ics.oop.elements.Animal;
-import agh.ics.oop.gui.App;
 import agh.ics.oop.map.GrassGenerator;
 import agh.ics.oop.map.WorldMap;
 import agh.ics.oop.utils.Vector2d;
 import javafx.scene.layout.GridPane;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static agh.ics.oop.elements.Constants.*;
-import static agh.ics.oop.options.MapVariant.*;
 
 public class Simulation implements Runnable {
     public WorldMap map;
@@ -46,8 +47,10 @@ public class Simulation implements Runnable {
     }
 
     public void run() {
-        map = new WorldMap(chooseBorderOption(), chooseGeneOption(), grid);
-        grassGenerator = new GrassGenerator(map);
+        IPuszczaOption puszczaOption = choosePuszczaOption();
+        map = new WorldMap(chooseBorderOption(), chooseGeneOption(), chooseBehaviourOption(), puszczaOption, grid);
+        grassGenerator = new GrassGenerator(map, puszczaOption);
+        puszczaOption.updateMap(map);
         generateAnimals();
 
         while(isActive) {
@@ -74,6 +77,20 @@ public class Simulation implements Runnable {
         };
     }
 
+    private IBehaviourOption chooseBehaviourOption() {
+        return switch(GENE_JUMP_VARIANT) {
+            case PELNA_PROKRASTYNACJA -> new PelnaProkrastynacjaBehaviour();
+            case NIECO_SZALENSTWA -> new NiecoSzalenstwaBehaviour();
+        };
+    }
+
+    private IPuszczaOption choosePuszczaOption() {
+        return switch(PUSZCZA_VARIANT) {
+            case ZALESIONE_ROWNIKI -> new ZalesioneRownikiPuszcza(MAP_WIDTH, MAP_HEIGHT);
+            case TOKSYCZNE_TRUPY -> new ToksyczeTrupyPuszcza(MAP_WIDTH, MAP_HEIGHT);
+        };
+    }
+
     public void generateAnimals() {
         for(int i = 0; i < START_ANIMAL_COUNT; i++) {
             generateAnimalRandomly();
@@ -85,7 +102,7 @@ public class Simulation implements Runnable {
     }
 
     public void generateAnimalRandomly() {
-        Animal animal = new Animal(map, Vector2d.random(new Vector2d(MAP_WIDTH, MAP_HEIGHT)));
+        Animal animal = new Animal(map, Vector2d.random(new Vector2d(MAP_WIDTH, MAP_HEIGHT)), chooseBehaviourOption());
         map.addAnimal(animal);
     }
 }
