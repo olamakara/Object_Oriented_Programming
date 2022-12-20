@@ -5,5 +5,5 @@ import agh.ics.oop.elements.Genome;
 import java.util.List;
 
 public interface IGeneOption {
-    List<Integer> generateGene(List<Integer> genome);
+    List<Integer> generateGene(List<Integer> genome, int minimum, int maximum);
 }

@@ -1,33 +1,34 @@
 package agh.ics.oop.map;
 
 import agh.ics.oop.configurations.puszcza.IPuszczaOption;
+import agh.ics.oop.utils.ConstantsConfig;
 import agh.ics.oop.utils.Vector2d;
 
 import java.util.*;
-
-import static agh.ics.oop.elements.Constants.*;
 
 public class GrassGenerator implements IGrassGenObserver {
     private WorldMap map;
     private final Map<Vector2d, MapField> mapFields;
     private final List<Vector2d> emptyFields = new ArrayList<Vector2d>();
     private final IPuszczaOption puszczaOption;
+    private ConstantsConfig currentConfig;
 
-    public GrassGenerator(WorldMap map, IPuszczaOption puszczaOption) {
+    public GrassGenerator(WorldMap map, IPuszczaOption puszczaOption, ConstantsConfig currentConfig) {
         this.map = map;
+        this.currentConfig = currentConfig;
         this.puszczaOption = puszczaOption;
         this.mapFields = map.getFields();
         for(MapField field : this.mapFields.values()) {
             field.addGrassGenObserver(this);
         }
 
-        for(int x = 0; x < MAP_WIDTH; x++) {
-            for(int y = 0; y < MAP_HEIGHT; y++) {
+        for(int x = 0; x < currentConfig.getInt("MAP_WIDTH"); x++) {
+            for(int y = 0; y < currentConfig.getInt("MAP_HEIGHT"); y++) {
                 emptyFields.add(new Vector2d(x, y));
             }
         }
 
-        generate(START_GRASS_COUNT);
+        generate(currentConfig.getInt("START_GRASS_COUNT"));
     }
 
     public void freeGrass(Vector2d position) {

@@ -15,10 +15,17 @@ import agh.ics.oop.configurations.puszcza.ZalesioneRownikiPuszcza;
 import agh.ics.oop.elements.Animal;
 import agh.ics.oop.map.GrassGenerator;
 import agh.ics.oop.map.WorldMap;
+import agh.ics.oop.options.BehaviourVariant;
+import agh.ics.oop.options.GeneVariant;
+import agh.ics.oop.options.MapVariant;
+import agh.ics.oop.options.PuszczaVariant;
+import agh.ics.oop.utils.ConstantsConfig;
 import agh.ics.oop.utils.Vector2d;
 import javafx.scene.layout.GridPane;
 
-import static agh.ics.oop.elements.Constants.*;
+import static agh.ics.oop.options.BehaviourVariant.*;
+import static agh.ics.oop.options.GeneVariant.*;
+import static agh.ics.oop.options.PuszczaVariant.*;
 
 public class Simulation implements Runnable {
     public WorldMap map;
@@ -26,8 +33,14 @@ public class Simulation implements Runnable {
     private int moveDelay;
     public boolean isActive = true;
     private GridPane grid;
+    public ConstantsConfig currentConfig;
+    private int width;
+    private int height;
 
-    public Simulation(GridPane grid) {
+    public Simulation(GridPane grid, ConstantsConfig currentConfig) {
+        this.currentConfig = currentConfig;
+        this.width = currentConfig.getInt("MAP_WIDTH");
+        this.height = currentConfig.getInt("MAP_HEIGHT");
         this.grid = grid;
     }
 
@@ -41,15 +54,15 @@ public class Simulation implements Runnable {
         //rozmnażanie się najedzonych zwierząt znajdujących się na tym samym polu,
         map.makeAnimalsReproduce();
         //wzrastanie nowych roślin na wybranych polach mapy.
-        grassGenerator.generate(DAILY_GRASS_COUNT);
+        grassGenerator.generate(currentConfig.getInt("DAILY_GRASS_COUNT"));
         //*Minął dzień więc wiek zwierząt się zwiększa, dodatkowo załatwiamy kwestie UI dla MapFieldów
         map.dayGoneBy();
     }
 
     public void run() {
         IPuszczaOption puszczaOption = choosePuszczaOption();
-        map = new WorldMap(chooseBorderOption(), chooseGeneOption(), chooseBehaviourOption(), puszczaOption, grid);
-        grassGenerator = new GrassGenerator(map, puszczaOption);
+        map = new WorldMap(chooseBorderOption(), chooseGeneOption(), chooseBehaviourOption(), puszczaOption, grid, currentConfig);
+        grassGenerator = new GrassGenerator(map, puszczaOption, currentConfig);
         puszczaOption.updateMap(map);
         generateAnimals();
 
@@ -70,35 +83,35 @@ public class Simulation implements Runnable {
     }
 
     private IBorderOption chooseBorderOption() {
-        return switch(MAP_VARIANT) {
+        return switch((MapVariant)currentConfig.get("MAP_VARIANT")) {
             case KULA_ZIEMSKA -> new KulaZiemskaBorder();
             case PIEKIELNY_PORTAL -> new PiekielnyPortalBorder();
         };
     }
 
     private IGeneOption chooseGeneOption() {
-        return switch(GENE_VARIANT) {
+        return switch((GeneVariant)currentConfig.get("GENE_VARIANT")) {
             case PELNA_LOSOWOSC -> new PelnaLosowoscGene();
             case LEKKA_KOREKTA -> new LekkaKorektaGene();
         };
     }
 
     private IBehaviourOption chooseBehaviourOption() {
-        return switch(GENE_JUMP_VARIANT) {
+        return switch((BehaviourVariant)currentConfig.get("GENE_JUMP_VARIANT")) {
             case PELNA_PROKRASTYNACJA -> new PelnaProkrastynacjaBehaviour();
             case NIECO_SZALENSTWA -> new NiecoSzalenstwaBehaviour();
         };
     }
 
     private IPuszczaOption choosePuszczaOption() {
-        return switch(PUSZCZA_VARIANT) {
-            case ZALESIONE_ROWNIKI -> new ZalesioneRownikiPuszcza(MAP_WIDTH, MAP_HEIGHT);
-            case TOKSYCZNE_TRUPY -> new ToksyczeTrupyPuszcza(MAP_WIDTH, MAP_HEIGHT);
+        return switch((PuszczaVariant)currentConfig.get("PUSZCZA_VARIANT")) {
+            case ZALESIONE_ROWNIKI -> new ZalesioneRownikiPuszcza(width, height);
+            case TOKSYCZNE_TRUPY -> new ToksyczeTrupyPuszcza(width, height);
         };
     }
 
     public void generateAnimals() {
-        for(int i = 0; i < START_ANIMAL_COUNT; i++) {
+        for(int i = 0; i < currentConfig.getInt("START_ANIMAL_COUNT"); i++) {
             generateAnimalRandomly();
         }
     }
@@ -108,7 +121,7 @@ public class Simulation implements Runnable {
     }
 
     public void generateAnimalRandomly() {
-        Animal animal = new Animal(map, Vector2d.random(new Vector2d(MAP_WIDTH, MAP_HEIGHT)), chooseBehaviourOption());
+        Animal animal = new Animal(map, Vector2d.random(new Vector2d(width, height)), chooseBehaviourOption(), currentConfig);
         map.addAnimal(animal);
     }
 }

@@ -2,12 +2,11 @@ package agh.ics.oop.elements;
 
 import agh.ics.oop.configurations.behaviour.IBehaviourOption;
 import agh.ics.oop.map.WorldMap;
+import agh.ics.oop.utils.ConstantsConfig;
 import agh.ics.oop.utils.Direction;
 import agh.ics.oop.utils.Vector2d;
 
 import java.util.Random;
-
-import static agh.ics.oop.elements.Constants.*;
 
 public class Animal {
     private Vector2d location;
@@ -17,18 +16,22 @@ public class Animal {
     private WorldMap map;
     private int currentAge = 0;
     private int childrenCount = 0;
+    private final ConstantsConfig currentConfig;
 
-    public Animal(WorldMap map, Vector2d initialPosition, IBehaviourOption behaviourOption) {
+    public Animal(WorldMap map, Vector2d initialPosition, IBehaviourOption behaviourOption, ConstantsConfig currentConfig) {
+        this.currentConfig = currentConfig;
         this.location = initialPosition;
-        this.energy = START_ANIMAL_ENERGY;
+        this.energy = currentConfig.getInt("START_ANIMAL_ENERGY");
         this.map = map;
 
         Random rand = new Random();
         this.direction = new Direction(rand.nextInt(8));
-        this.genome = new Genome(GENOME_LENGTH, behaviourOption);
+        this.genome = new Genome(currentConfig.getInt("GENOME_LENGTH"), behaviourOption,
+                currentConfig.getInt("MINIMUM_MUTATIONS"), currentConfig.getInt("MAXIMUM_MUTATIONS"));
     }
 
-    public Animal(WorldMap map, Vector2d initialPosition, int startEnergy, Genome childGenome, IBehaviourOption behaviourOption) {
+    public Animal(WorldMap map, Vector2d initialPosition, int startEnergy, Genome childGenome, IBehaviourOption behaviourOption, ConstantsConfig currentConfig) {
+        this.currentConfig = currentConfig;
         this.location = initialPosition;
         this.energy = startEnergy;
         this.map = map;
@@ -71,6 +74,6 @@ public class Animal {
 
     public void ageAnimal() {
         this.currentAge += 1;
-        this.energy -= DAILY_ENERGY_DECREASE;
+        this.energy -= this.currentConfig.getInt("DAILY_ENERGY_DECREASE");
     }
 }

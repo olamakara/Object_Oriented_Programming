@@ -5,9 +5,6 @@ import agh.ics.oop.elements.Genome;
 import java.util.List;
 import java.util.Random;
 
-import static agh.ics.oop.elements.Constants.MAXIMUM_MUTATIONS;
-import static agh.ics.oop.elements.Constants.MINIMUM_MUTATIONS;
-
 public class LekkaKorektaGene extends AbstractGeneOption {
     private int newGene(int oldGene) {
         Random rand = new Random();
@@ -19,8 +16,8 @@ public class LekkaKorektaGene extends AbstractGeneOption {
     }
 
     @Override
-    public List<Integer> generateGene(List<Integer> genome) {
-        for(int index : this.getRandomIndexes(genome.size(), MINIMUM_MUTATIONS, MAXIMUM_MUTATIONS)) {
+    public List<Integer> generateGene(List<Integer> genome, int minimum, int maximum) {
+        for(int index : this.getRandomIndexes(genome.size(), minimum, maximum)) {
             genome.set(index, newGene(genome.get(index)));
         }
         return genome;

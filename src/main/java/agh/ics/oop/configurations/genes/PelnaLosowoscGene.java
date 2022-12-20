@@ -5,14 +5,12 @@ import agh.ics.oop.elements.Genome;
 import java.util.List;
 import java.util.Random;
 
-import static agh.ics.oop.elements.Constants.*;
-
 public class PelnaLosowoscGene extends AbstractGeneOption {
 
     @Override
-    public List<Integer> generateGene(List<Integer> genome) {
+    public List<Integer> generateGene(List<Integer> genome, int minimum, int maximum) {
         Random rand = new Random();
-        for(int index : this.getRandomIndexes(genome.size(), MINIMUM_MUTATIONS, MAXIMUM_MUTATIONS)) {
+        for(int index : this.getRandomIndexes(genome.size(), minimum, maximum)) {
             genome.set(index, rand.nextInt(8));
         }
         return genome;

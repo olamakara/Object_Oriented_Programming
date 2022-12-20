@@ -14,8 +14,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.geometry.HPos;
 
-import static agh.ics.oop.elements.Constants.*;
-
 public class App extends Application {
 
     private final GridPane gridPane = new GridPane();

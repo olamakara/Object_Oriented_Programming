@@ -5,6 +5,7 @@ import agh.ics.oop.configurations.genes.IGeneOption;
 import agh.ics.oop.configurations.puszcza.IPuszczaOption;
 import agh.ics.oop.elements.Animal;
 import agh.ics.oop.elements.Genome;
+import agh.ics.oop.utils.ConstantsConfig;
 import agh.ics.oop.utils.Vector2d;
 import javafx.application.Platform;
 import javafx.geometry.HPos;
@@ -13,9 +14,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.*;
-
-import static agh.ics.oop.elements.Constants.*;
-
 public class MapField {
     private final Vector2d position;
     private final GridPane grid;
@@ -27,6 +25,7 @@ public class MapField {
     private IGeneOption geneOption;
     private IBehaviourOption behaviourOption;
     private IPuszczaOption puszczaOption;
+    private ConstantsConfig currentConfig;
     private int deathCount = 0;
 
     private final TreeSet<Animal> animals = new TreeSet<Animal>(new Comparator<Animal>() {
@@ -46,8 +45,9 @@ public class MapField {
     });
     private boolean isGrass = false;
 
-    public MapField(Vector2d position, GridPane grid, WorldMap map, IGeneOption geneOption, IBehaviourOption behaviourOption, IPuszczaOption puszczaOption) {
+    public MapField(Vector2d position, GridPane grid, WorldMap map, IGeneOption geneOption, IBehaviourOption behaviourOption, IPuszczaOption puszczaOption, ConstantsConfig currentConfig) {
         this.grid = grid;
+        this.currentConfig = currentConfig;
         this.position = position;
         this.map = map;
         this.geneOption = geneOption;
@@ -57,14 +57,17 @@ public class MapField {
     }
 
     private void generateUIElements() {
-        grassRect = new Rectangle(UI_BOX_SIZE, UI_BOX_SIZE);
+        int boxSize = currentConfig.getInt("UI_BOX_SIZE");
+        int animalSize = currentConfig.getInt("UI_ANIMAL_SIZE");
+
+        grassRect = new Rectangle(boxSize, boxSize);
         grassRect.setFill(Color.color(0.13, 0.61, 0));
         grassRect.setStroke(Color.color(0.13, 0.61, 0));
         grassRect.setOpacity(this.isGrass ? 1 : 0);
         grid.add(grassRect, position.x(), position.y());
         GridPane.setHalignment(grassRect, HPos.CENTER);
 
-        animalRect = new Rectangle(UI_ANIMAL_SIZE, UI_ANIMAL_SIZE);
+        animalRect = new Rectangle(animalSize, animalSize);
         animalRect.setFill(Color.color(0.8, 0, 0));
         animalRect.setStroke(Color.color(0.8, 0, 0));
         animalRect.setVisible(false);
@@ -89,21 +92,23 @@ public class MapField {
 
     public void eatGrass() {
         if(this.isGrass && animals.size() != 0) {
-            animals.first().addEnergy(GRASS_EATEN_ENERGY);
+            animals.first().addEnergy(currentConfig.getInt("GRASS_EATEN_ENERGY"));
             this.isGrass = false;
             this.grassGenObserver.freeGrass(this.position);
         }
     }
 
     public void reproduce() {
+        int breedingEnergy = currentConfig.getInt("BREEDING_ENERGY");
+        int genomeLength = currentConfig.getInt("GENOME_LENGTH");
         if(animals.size() >= 2) {
             Animal parent1 = animals.first();
             Animal parent2 = (Animal) animals.toArray()[1];
-            if(parent2.getEnergy() >= BREEDING_ENERGY) {
-                parent1.addEnergy(-BREEDING_ENERGY);
-                parent2.addEnergy(-BREEDING_ENERGY);
-                Genome childGenome = new Genome(GENOME_LENGTH, geneOption, parent1.getGenome(), parent2.getGenome(), parent1.getEnergy(), parent2.getEnergy(), behaviourOption);
-                Animal child = new Animal(map, position, BREEDING_ENERGY*2, childGenome, behaviourOption);
+            if(parent2.getEnergy() >= breedingEnergy) {
+                parent1.addEnergy(-breedingEnergy);
+                parent2.addEnergy(-breedingEnergy);
+                Genome childGenome = new Genome(genomeLength, geneOption, parent1.getGenome(), parent2.getGenome(), parent1.getEnergy(), parent2.getEnergy(), behaviourOption);
+                Animal child = new Animal(map, position, breedingEnergy*2, childGenome, behaviourOption, currentConfig);
                 this.addAnimal(child);
                 this.map.addAnimal(child);
             }
@@ -118,9 +123,12 @@ public class MapField {
         grassRect.setFill(grassColor);
         grassRect.setStroke(grassColor);
 
-        if(animals.size() == 0) animalRect.setVisible(false);
+        if(animals.size() == 0) {
+            animalRect.setOpacity(0);
+            animalRect.setVisible(false);
+        }
         else {
-            animalRect.setOpacity(Math.min(1, (double)animals.first().getEnergy()/FULL_ANIMAL_ENERGY));
+            animalRect.setOpacity(Math.min(1, (double)animals.first().getEnergy() / currentConfig.getInt("FULL_ANIMAL_ENERGY")));
             animalRect.setVisible(true);
         }
     }

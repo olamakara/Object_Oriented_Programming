@@ -12,11 +12,16 @@ public class Genome {
     private IBehaviourOption behaviourOption;
     private int currentGene;
     private int length;
+    private int minimumMutations;
+    private int maximumMutations;
 
     //W przypadku nie podania żadnych innych genotypów, na których podstawie genom miałby się tworzyc
     //to jest on losowany (losowe liczby od 0 do 7 włącznie, N takich liczb)
-    public Genome(int length, IBehaviourOption behaviourOption) {
+    public Genome(int length, IBehaviourOption behaviourOption, int minimumMutations, int maximumMutations) {
         Random rand = new Random();
+
+        this.minimumMutations = minimumMutations;
+        this.maximumMutations = maximumMutations;
 
         for(int i = 0; i < length; i++) {
             this.genome.add(rand.nextInt(8));
@@ -47,7 +52,7 @@ public class Genome {
         }
 
         this.behaviourOption = behaviourOption;
-        this.genome = geneOption.generateGene(newGenome);
+        this.genome = geneOption.generateGene(newGenome, minimumMutations, maximumMutations);
         this.currentGene = rand.nextInt(length);
         this.length = length;
     }

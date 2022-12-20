@@ -4,5 +4,5 @@ import agh.ics.oop.elements.Animal;
 import agh.ics.oop.utils.Vector2d;
 
 public interface IBorderOption {
-    Vector2d calculateLocationAfterBorderHit(Vector2d newLocation, Animal animal);
+    Vector2d calculateLocationAfterBorderHit(Vector2d newLocation, Animal animal, int width, int height, int energy);
 }
