@@ -13,42 +13,44 @@ import static agh.ics.oop.options.PuszczaVariant.*;
 public class Constants {
     //Parametry symulacji
     //wysokość i szerokość mapy,
-    public static final int MAP_WIDTH = 50;
-    public static final int MAP_HEIGHT = 50;
+
+    public static int MAP_WIDTH;
+    public static int MAP_HEIGHT;
     //wariant mapy (wyjaśnione w sekcji poniżej),
-    public static final MapVariant MAP_VARIANT = PIEKIELNY_PORTAL;
+    public static MapVariant MAP_VARIANT;
     //startowa liczba roślin,
-    public static final int START_GRASS_COUNT = 500;
+    public static int START_GRASS_COUNT;
     //energia zapewniana przez zjedzenie jednej rośliny,
-    public static final int GRASS_EATEN_ENERGY = 15;
+    public static int GRASS_EATEN_ENERGY;
     //liczba roślin wyrastająca każdego dnia,
-    public static final int DAILY_GRASS_COUNT = 10;
+    public static int DAILY_GRASS_COUNT;
     //wariant wzrostu roślin (wyjaśnione w sekcji poniżej),
-    public static final PuszczaVariant PUSZCZA_VARIANT = ZALESIONE_ROWNIKI;
+    public static PuszczaVariant PUSZCZA_VARIANT;
     //startowa liczba zwierzaków
-    public static final int START_ANIMAL_COUNT = 40;
+    public static int START_ANIMAL_COUNT;
     //startowa energia zwierzaków
-    public static final int START_ANIMAL_ENERGY = 50;
+    public static int START_ANIMAL_ENERGY;
     //energia konieczna, by uznać zwierzaka za najedzonego (i gotowego do rozmnażania),
-    public static final int FULL_ANIMAL_ENERGY = 30;
+    public static int FULL_ANIMAL_ENERGY;
     //energia rodziców zużywana by stworzyć potomka,
-    public static final int BREEDING_ENERGY = 10;
+    public static int BREEDING_ENERGY;
     //minimalna i maksymalna liczba mutacji u potomków (może być równa 0 ),
-    public static final int MINIMUM_MUTATIONS = 0;
-    public static final int MAXIMUM_MUTATIONS = 0;
+    public static int MINIMUM_MUTATIONS;
+    public static int MAXIMUM_MUTATIONS;
     //wariant mutacji (wyjaśnione w sekcji poniżej),
-    public static final GeneVariant GENE_VARIANT = LEKKA_KOREKTA;
+    public static GeneVariant GENE_VARIANT;
     //długość genomu zwierzaków,
-    public static final int GENOME_LENGTH = 5;
+    public static int GENOME_LENGTH;
     //wariant zachowania zwierzaków (wyjaśnione w sekcji poniżej).
-    public static final BehaviourVariant GENE_JUMP_VARIANT = PELNA_PROKRASTYNACJA;
+    public static BehaviourVariant GENE_JUMP_VARIANT;
     //WLASNE: ilość energii zmniejszającej się każdego dnia
-    public static final int DAILY_ENERGY_DECREASE = 1;
+    public static int DAILY_ENERGY_DECREASE;
     //WLASNE: opoznienie jednego dnia symulacji
-    public static final int DAY_DELAY = 50;
+    public static int DAY_DELAY;
     //WLASNE: ustawienia dot. siatki grid
-    public static final int UI_GRID_SIZE = 16;
-    public static final int UI_BOX_SIZE = 16;
-    public static final int UI_ANIMAL_SIZE = 11;
-    public static final boolean GRIDLINES_VISIBLE = false;
+    public static int UI_GRID_SIZE;
+    public static int UI_BOX_SIZE;
+    public static int UI_ANIMAL_SIZE;
+    public static boolean GRIDLINES_VISIBLE;
+
 }
